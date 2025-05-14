@@ -1,6 +1,6 @@
 import { Droppable } from '@hello-pangea/dnd';
 import { EllipsisVerticalIcon, PlusIcon } from '@heroicons/react/24/outline';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Card as CardType, List as ListType } from '../types';
 import Card from './Card';
@@ -12,6 +12,7 @@ interface ListProps {
   onEditListTitle: (listId: string, newTitle: string) => void;
   onRemoveList: (listId: string) => void;
   onSortByTitle: (listId: string, updatedCards: CardType[]) => void;
+  searchByKey: string
 }
 
 const List: React.FC<ListProps> = ({
@@ -19,12 +20,28 @@ const List: React.FC<ListProps> = ({
   onAddCard,
   onCardClick,
   onEditListTitle,
+  onRemoveList,
+  onSortByTitle,
+  searchByKey
 }) => {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState('');
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [listTitle, setListTitle] = useState(list.title);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [sortby , setSortby] = useState<string>('asc')
+
+
+  useEffect(()=>{
+    console.log(searchByKey)
+
+    // const card = [...list.cards].filter((c)=>{
+    //   return c.title === searchByKey
+    // })
+
+    // onSortByTitle(list.id, card) // id and card array
+
+  }, [searchByKey])
 
   const handleAddCard = () => {
     if (newCardTitle.trim()) {
@@ -86,12 +103,47 @@ const List: React.FC<ListProps> = ({
   };
 
   const handleRemoveList = () => {
-    throw new Error('Function not implemented.');
+    onRemoveList(list.id)
   };
 
   const handleSortByTitle = () => {
-    throw new Error('Function not implemented.');
+
+    if (sortby === 'asc'){
+      setSortby("desc")
+    }else{
+      setSortby("asc")
+    }
+
+    const card = list.cards.sort( (a,b)=> {
+
+      const aTitle = a.title.toLowerCase().localeCompare(b.title)
+      console.log(aTitle)
+      return sortby === 'asc' ? aTitle : -aTitle
+
+    })
+    onSortByTitle(list.id, card) // id and card array
+
   };
+
+  const handleSortByDate =()=>{
+    if (sortby === 'asc'){
+      setSortby("desc")
+    }else{
+      setSortby("asc")
+    }
+
+
+    const card = list.cards.sort( (a,b)=> {
+
+      const aDate = new Date(a.dateAdded).getTime()
+      const bDate = new Date(b.dateAdded).getTime()
+      console.log(aDate, bDate )
+      return sortby === 'asc' ? aDate - bDate : bDate - aDate
+
+    })
+    onSortByTitle(list.id, card) // id and card array
+
+  }
 
   return (
     <div className="w-72 flex-shrink-0 max-h-full flex flex-col mr-4 rounded overflow-hidden shadow-md">
@@ -140,7 +192,9 @@ const List: React.FC<ListProps> = ({
                 >
                   Sort by title (Ascending and Descending)
                 </li>
-                <li className="py-2 px-4 rounded cursor-pointer hover:bg-[#8d80d6]">
+                <li className="py-2 px-4 rounded cursor-pointer hover:bg-[#8d80d6]"
+                  onClick={handleSortByDate}
+                >
                   Sort by date (Ascending and Descending)
                 </li>
               </ul>

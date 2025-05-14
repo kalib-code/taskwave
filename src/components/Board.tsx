@@ -1,8 +1,8 @@
 import {
-  DragDropContext,
-  Draggable,
-  Droppable,
-  DropResult,
+    DragDropContext,
+    Draggable,
+    Droppable,
+    DropResult,
 } from '@hello-pangea/dnd';
 import { PlusIcon } from '@heroicons/react/24/outline';
 import React, { useEffect, useState } from 'react';
@@ -413,6 +413,7 @@ const Board: React.FC<BoardProps> = ({ searchKey }) => {
                         onEditListTitle={handleEditListTitle}
                         onRemoveList={handleRemoveList}
                         onSortByTitle={handleSortByTitle}
+                        searchByKey={searchKey}
                       />
                     </div>
                   )}
